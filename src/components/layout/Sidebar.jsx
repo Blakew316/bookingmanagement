@@ -7,8 +7,8 @@ import {
   CreditCard,
   BarChart3,
   PartyPopper,
-  Sparkles,
   X,
+  Zap,
 } from 'lucide-react';
 
 const navItems = [
@@ -24,42 +24,36 @@ const navItems = [
 export default function Sidebar({ open, onClose }) {
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-screen w-72 bg-gray-900
-          flex flex-col transition-transform duration-300 ease-in-out
+          fixed top-0 left-0 z-50 h-screen w-60 bg-white border-r border-gray-200
+          flex flex-col transition-transform duration-200
           lg:translate-x-0 lg:static lg:z-auto
           ${open ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-6 py-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Sparkles className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between px-5 h-16 border-b border-gray-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-white" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">EventFlow</h1>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-indigo-400 font-semibold">
-                Booking Manager
-              </p>
-            </div>
+            <span className="text-base font-semibold text-gray-900 tracking-tight">EventFlow</span>
           </div>
-          <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-white">
+          <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-gray-600">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -70,21 +64,21 @@ export default function Sidebar({ open, onClose }) {
               }
               onClick={onClose}
             >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium">{item.label}</span>
+              <item.icon className="w-4 h-4 flex-shrink-0" />
+              <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+        <div className="px-5 py-4 border-t border-gray-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-white text-xs font-semibold">
               M
             </div>
             <div>
-              <p className="text-sm font-medium text-white">Merchant</p>
-              <p className="text-xs text-gray-500">Admin</p>
+              <p className="text-sm font-medium text-gray-900">Merchant</p>
+              <p className="text-xs text-gray-400">Admin</p>
             </div>
           </div>
         </div>

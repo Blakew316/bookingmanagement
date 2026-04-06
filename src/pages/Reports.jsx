@@ -29,16 +29,16 @@ import { formatCurrency, capitalize } from '../lib/formatters';
 import { STATUS_COLORS } from '../lib/constants';
 
 const PIE_COLORS = {
-  inquiry: '#60a5fa',
-  proposal: '#fbbf24',
-  confirmed: '#34d399',
-  completed: '#9ca3af',
-  cancelled: '#f87171',
+  inquiry: '#9ca3af',
+  proposal: '#d1d5db',
+  confirmed: '#111827',
+  completed: '#6b7280',
+  cancelled: '#e5e7eb',
 };
 
 const TYPE_COLORS = [
-  '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
-  '#f97316', '#eab308', '#22c55e', '#14b8a6',
+  '#111827', '#374151', '#4b5563', '#6b7280',
+  '#9ca3af', '#d1d5db', '#111827', '#374151',
 ];
 
 export default function Reports() {
@@ -70,28 +70,24 @@ export default function Reports() {
           label="Total Revenue"
           value={formatCurrency(overview?.total_revenue || 0)}
           sub="All time earnings"
-          gradient="from-emerald-500 to-teal-500"
         />
         <StatCard
           icon={TrendingUp}
           label="Avg. Event Value"
           value={formatCurrency(overview?.total_events ? (overview.total_revenue / overview.total_events) : 0)}
           sub="Per event average"
-          gradient="from-indigo-600 to-purple-600"
         />
         <StatCard
           icon={CalendarDays}
           label="Total Events"
           value={overview?.total_events || 0}
           sub="All time events"
-          gradient="from-amber-500 to-orange-500"
         />
         <StatCard
           icon={PartyPopper}
           label="Confirmed Events"
           value={overview?.confirmed_count || 0}
           sub="Ready to go"
-          gradient="from-rose-500 to-pink-500"
         />
       </div>
 
@@ -101,7 +97,7 @@ export default function Reports() {
           title="Revenue by Month"
           subtitle="Monthly revenue breakdown"
           action={
-            <div className="flex items-center gap-1.5 text-sm text-indigo-600 font-medium">
+            <div className="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
               <BarChart3 className="w-4 h-4" />
               <span>Bar Chart</span>
             </div>
@@ -130,15 +126,15 @@ export default function Reports() {
               <Tooltip
                 formatter={(value) => [formatCurrency(value), 'Revenue']}
                 contentStyle={{
-                  borderRadius: '12px',
+                  borderRadius: '8px',
                   border: 'none',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 }}
-                cursor={{ fill: 'rgba(99, 102, 241, 0.05)' }}
+                cursor={{ fill: 'rgba(107, 114, 128, 0.05)' }}
               />
               <Bar
                 dataKey="revenue"
-                fill="#6366f1"
+                fill="#111827"
                 radius={[6, 6, 0, 0]}
                 maxBarSize={50}
               />
@@ -155,7 +151,7 @@ export default function Reports() {
             title="Events by Type"
             subtitle="Distribution across event types"
             action={
-              <div className="flex items-center gap-1.5 text-sm text-purple-600 font-medium">
+              <div className="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
                 <BarChart3 className="w-4 h-4" />
               </div>
             }
@@ -190,7 +186,7 @@ export default function Reports() {
                 <Tooltip
                   formatter={(value) => [value, 'Events']}
                   contentStyle={{
-                    borderRadius: '12px',
+                    borderRadius: '8px',
                     border: 'none',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                   }}
@@ -214,7 +210,7 @@ export default function Reports() {
             title="Events by Status"
             subtitle="Current status distribution"
             action={
-              <div className="flex items-center gap-1.5 text-sm text-teal-600 font-medium">
+              <div className="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
                 <PieChartIcon className="w-4 h-4" />
               </div>
             }
@@ -247,7 +243,7 @@ export default function Reports() {
                   <Tooltip
                     formatter={(value, name) => [value, capitalize(name)]}
                     contentStyle={{
-                      borderRadius: '12px',
+                      borderRadius: '8px',
                       border: 'none',
                       boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                     }}
@@ -272,21 +268,21 @@ export default function Reports() {
           subtitle="Overview of payment statuses across events"
         />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="text-center p-6 bg-emerald-50 rounded-xl">
-            <p className="text-sm font-medium text-emerald-700">Collected</p>
-            <p className="text-2xl font-bold text-emerald-900 mt-1">
+          <div className="text-center p-6 bg-gray-50 rounded-lg">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Collected</p>
+            <p className="text-2xl font-bold text-gray-900 mt-1">
               {formatCurrency(overview?.total_revenue || 0)}
             </p>
           </div>
-          <div className="text-center p-6 bg-amber-50 rounded-xl">
-            <p className="text-sm font-medium text-amber-700">Outstanding</p>
-            <p className="text-2xl font-bold text-amber-900 mt-1">
+          <div className="text-center p-6 bg-gray-50 rounded-lg">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Outstanding</p>
+            <p className="text-2xl font-bold text-gray-900 mt-1">
               {formatCurrency(overview?.outstanding_balance || 0)}
             </p>
           </div>
-          <div className="text-center p-6 bg-indigo-50 rounded-xl">
-            <p className="text-sm font-medium text-indigo-700">Collection Rate</p>
-            <p className="text-2xl font-bold text-indigo-900 mt-1">
+          <div className="text-center p-6 bg-gray-50 rounded-lg">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Collection Rate</p>
+            <p className="text-2xl font-bold text-gray-900 mt-1">
               {overview?.total_revenue && overview?.outstanding_balance != null
                 ? `${Math.round(
                     (overview.total_revenue /

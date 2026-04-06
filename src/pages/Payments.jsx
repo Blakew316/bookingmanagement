@@ -26,16 +26,12 @@ const FILTER_TABS = [
   { key: 'final', label: 'Final Payments' },
 ];
 
-function getProgressColor(percentage) {
-  if (percentage < 25) return 'bg-red-500';
-  if (percentage < 75) return 'bg-amber-500';
-  return 'bg-emerald-500';
+function getProgressColor() {
+  return 'bg-gray-900';
 }
 
-function getProgressTrack(percentage) {
-  if (percentage < 25) return 'bg-red-100';
-  if (percentage < 75) return 'bg-amber-100';
-  return 'bg-emerald-100';
+function getProgressTrack() {
+  return 'bg-gray-200';
 }
 
 export default function Payments() {
@@ -71,23 +67,20 @@ export default function Payments() {
         <StatCard
           icon={DollarSign}
           label="Total Revenue"
-          value={formatCurrency(summary?.totalRevenue || 0)}
+          value={formatCurrency(summary?.total_revenue || 0)}
           sub="All collected payments"
-          gradient="from-emerald-500 to-teal-500"
         />
         <StatCard
           icon={Clock}
           label="Outstanding Balance"
-          value={formatCurrency(summary?.outstandingBalance || 0)}
+          value={formatCurrency(summary?.total_outstanding || 0)}
           sub="Pending collection"
-          gradient="from-amber-500 to-orange-500"
         />
         <StatCard
           icon={CreditCard}
           label="Total Deposits"
-          value={formatCurrency(summary?.totalDeposits || 0)}
+          value={formatCurrency(summary?.total_deposits || 0)}
           sub="Secured deposits"
-          gradient="from-indigo-600 to-purple-600"
         />
       </div>
 
@@ -98,7 +91,7 @@ export default function Payments() {
             title="Payment History"
             subtitle="All recorded transactions"
             action={
-              <div className="flex items-center gap-1.5 text-sm text-emerald-600 font-medium">
+              <div className="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
                 <TrendingUp className="w-4 h-4" />
                 <span>{filteredPayments.length} payments</span>
               </div>
@@ -108,7 +101,7 @@ export default function Payments() {
 
         {/* Filter Tabs */}
         <div className="px-6 pt-4 pb-2">
-          <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
+          <div className="flex gap-1 p-1 bg-gray-100 rounded-lg w-fit">
             {FILTER_TABS.map((tab) => (
               <button
                 key={tab.key}
@@ -170,14 +163,14 @@ export default function Payments() {
                 {filteredPayments.map((payment, index) => (
                   <tr
                     key={payment.id}
-                    className={`border-t border-gray-50 hover:bg-indigo-50/40 transition-colors ${
+                    className={`border-t border-gray-50 hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
                     }`}
                   >
                     <td className="px-6 py-4">
                       <Link
                         to={`/events/${payment.event_id}`}
-                        className="text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors inline-flex items-center gap-1 group"
+                        className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors inline-flex items-center gap-1 group"
                       >
                         {payment.event_title}
                         <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -190,7 +183,7 @@ export default function Payments() {
                       {formatCurrency(payment.amount || 0)}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
                         {capitalize(payment.payment_type)}
                       </span>
                     </td>
@@ -219,7 +212,7 @@ export default function Payments() {
               title="Outstanding Balances"
               subtitle="Events with remaining payments due"
               action={
-                <div className="flex items-center gap-1.5 text-sm text-amber-600 font-medium">
+                <div className="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
                   <AlertCircle className="w-4 h-4" />
                   <span>{(outstandingEvents || []).length} events</span>
                 </div>
@@ -257,7 +250,7 @@ export default function Payments() {
                       <div className="flex-1 min-w-0">
                         <Link
                           to={`/events/${event.id}`}
-                          className="text-sm font-semibold text-gray-900 hover:text-indigo-600 transition-colors inline-flex items-center gap-1 group"
+                          className="text-sm font-semibold text-gray-900 hover:text-gray-600 transition-colors inline-flex items-center gap-1 group"
                         >
                           {event.title}
                           <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -285,13 +278,13 @@ export default function Payments() {
                         </div>
                         <div className="text-center">
                           <p className="text-xs text-gray-400 mb-0.5">Paid</p>
-                          <p className="font-semibold text-emerald-600">
+                          <p className="font-semibold text-gray-700">
                             {formatCurrency(paid)}
                           </p>
                         </div>
                         <div className="text-center">
                           <p className="text-xs text-gray-400 mb-0.5">Remaining</p>
-                          <p className="font-semibold text-red-600">
+                          <p className="font-semibold text-gray-900">
                             {formatCurrency(remaining)}
                           </p>
                         </div>

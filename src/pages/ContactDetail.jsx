@@ -105,7 +105,7 @@ export default function ContactDetail() {
       <Card>
         <div className="flex flex-col sm:flex-row sm:items-center gap-6">
           {/* Large Avatar */}
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+          <div className="w-20 h-20 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
             <span className="text-white font-bold text-2xl">
               {getInitials(contact.first_name, contact.last_name)}
             </span>
@@ -122,7 +122,7 @@ export default function ContactDetail() {
                   <Mail className="w-4 h-4 text-gray-400" />
                   <a
                     href={`mailto:${contact.email}`}
-                    className="text-sm text-indigo-600 hover:text-indigo-700"
+                    className="text-sm text-gray-900 hover:text-gray-600"
                   >
                     {contact.email}
                   </a>

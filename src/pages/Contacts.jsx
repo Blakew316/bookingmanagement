@@ -127,7 +127,7 @@ export default function Contacts() {
           placeholder="Search contacts by name, email, or company..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 text-sm bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"
+          className="w-full pl-11 pr-4 py-3 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 focus:outline-none transition-all"
         />
       </div>
 
@@ -143,7 +143,7 @@ export default function Contacts() {
             >
               <div className="flex items-start gap-4">
                 {/* Avatar */}
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-bold text-sm">
                     {getInitials(contact.first_name, contact.last_name)}
                   </span>

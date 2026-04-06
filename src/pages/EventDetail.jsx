@@ -19,10 +19,10 @@ import { PAYMENT_TYPES, PAYMENT_METHODS } from '../lib/constants';
 
 const STATUS_STEPS = ['inquiry', 'proposal', 'confirmed', 'completed'];
 const STEP_COLORS = {
-  inquiry: { active: 'bg-blue-500', ring: 'ring-blue-200' },
-  proposal: { active: 'bg-amber-500', ring: 'ring-amber-200' },
-  confirmed: { active: 'bg-emerald-500', ring: 'ring-emerald-200' },
-  completed: { active: 'bg-gray-500', ring: 'ring-gray-200' },
+  inquiry: { active: 'bg-gray-900' },
+  proposal: { active: 'bg-gray-900' },
+  confirmed: { active: 'bg-gray-900' },
+  completed: { active: 'bg-gray-900' },
 };
 const TRANSITIONS = {
   inquiry: ['proposal', 'cancelled'],
@@ -126,12 +126,12 @@ export default function EventDetail() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Back button */}
-      <button onClick={() => navigate('/events')} className="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+      <button onClick={() => navigate('/events')} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Events
       </button>
 
       {/* Hero Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
+      <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -164,7 +164,7 @@ export default function EventDetail() {
                       <div className={`
                         w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all
                         ${isCompleted ? `${colors.active} text-white border-transparent` : ''}
-                        ${isActive ? `${colors.active} text-white border-transparent ring-4 ${colors.ring} animate-pulse-dot` : ''}
+                        ${isActive ? `${colors.active} text-white border-transparent ring-4 ring-gray-200` : ''}
                         ${!isCompleted && !isActive ? 'bg-gray-100 text-gray-400 border-gray-200' : ''}
                       `}>
                         {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}
@@ -174,7 +174,7 @@ export default function EventDetail() {
                       </span>
                     </div>
                     {idx < STATUS_STEPS.length - 1 && (
-                      <div className={`flex-1 h-0.5 mx-2 mt-[-20px] ${idx < currentStepIdx ? 'bg-indigo-400' : 'bg-gray-200'}`} />
+                      <div className={`flex-1 h-0.5 mx-2 mt-[-20px] ${idx < currentStepIdx ? 'bg-gray-900' : 'bg-gray-200'}`} />
                     )}
                   </div>
                 );
@@ -184,7 +184,7 @@ export default function EventDetail() {
         )}
 
         {event.status === 'cancelled' && (
-          <div className="mt-6 p-4 bg-red-50 rounded-xl flex items-center gap-3">
+          <div className="mt-6 p-4 bg-red-50 rounded-lg flex items-center gap-3">
             <XCircle className="w-5 h-5 text-red-500" />
             <span className="text-sm font-medium text-red-700">This event has been cancelled</span>
           </div>
@@ -256,17 +256,17 @@ export default function EventDetail() {
           {event.contact_first_name ? (
             <Link to={`/contacts/${event.contact_id}`} className="group">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                <div className="w-14 h-14 rounded-full bg-gray-900 flex items-center justify-center text-white text-lg font-bold">
                   {getInitials(event.contact_first_name, event.contact_last_name)}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  <p className="font-semibold text-gray-900 group-hover:underline">
                     {event.contact_first_name} {event.contact_last_name}
                   </p>
                   {event.contact_email && <p className="text-sm text-gray-500">{event.contact_email}</p>}
                   {event.contact_phone && <p className="text-sm text-gray-500">{event.contact_phone}</p>}
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-300 ml-auto group-hover:text-indigo-500 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-gray-300 ml-auto group-hover:text-gray-500 transition-colors" />
               </div>
             </Link>
           ) : (
@@ -287,17 +287,17 @@ export default function EventDetail() {
 
           {/* Payment Summary */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-3 bg-gray-50 rounded-xl">
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
               <p className="text-xs text-gray-500 mb-1">Total</p>
               <p className="text-lg font-bold text-gray-900">{formatCurrency(event.total_amount)}</p>
             </div>
-            <div className="text-center p-3 bg-emerald-50 rounded-xl">
-              <p className="text-xs text-emerald-600 mb-1">Paid</p>
-              <p className="text-lg font-bold text-emerald-700">{formatCurrency(paidAmount)}</p>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-500 mb-1">Paid</p>
+              <p className="text-lg font-bold text-gray-900">{formatCurrency(paidAmount)}</p>
             </div>
-            <div className="text-center p-3 bg-amber-50 rounded-xl">
-              <p className="text-xs text-amber-600 mb-1">Remaining</p>
-              <p className="text-lg font-bold text-amber-700">{formatCurrency(remaining)}</p>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-500 mb-1">Remaining</p>
+              <p className="text-lg font-bold text-gray-900">{formatCurrency(remaining)}</p>
             </div>
           </div>
 
@@ -309,9 +309,7 @@ export default function EventDetail() {
             </div>
             <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all duration-500 ${
-                  paidPercent >= 100 ? 'bg-emerald-500' : paidPercent >= 50 ? 'bg-amber-500' : 'bg-red-400'
-                }`}
+                className="h-full rounded-full transition-all duration-500 bg-gray-900"
                 style={{ width: `${paidPercent}%` }}
               />
             </div>

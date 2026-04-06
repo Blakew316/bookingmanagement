@@ -170,7 +170,7 @@ export default function Spaces() {
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                          className="h-full rounded-full bg-gray-900 transition-all duration-500"
                           style={{ width: `${capacityPercent}%` }}
                         />
                       </div>
@@ -180,8 +180,8 @@ export default function Spaces() {
                   {/* Hourly Rate */}
                   {space.hourly_rate != null && (
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                        <DollarSign className="w-4 h-4 text-emerald-600" />
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                        <DollarSign className="w-4 h-4 text-gray-600" />
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">Hourly Rate</p>

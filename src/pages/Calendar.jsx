@@ -19,10 +19,10 @@ const MONTH_NAMES = [
 const DAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const EVENT_CHIP_COLORS = {
-  inquiry: 'bg-blue-400',
+  inquiry: 'bg-gray-400',
   proposal: 'bg-amber-400',
-  confirmed: 'bg-emerald-500',
-  completed: 'bg-gray-400',
+  confirmed: 'bg-green-500',
+  completed: 'bg-gray-300',
   cancelled: 'bg-red-400',
 };
 
@@ -121,8 +121,8 @@ function MobileEventCard({ event, onClick }) {
   return (
     <button
       onClick={() => onClick(event.id)}
-      className="flex items-center gap-3 w-full rounded-xl bg-white p-3 shadow-sm border border-gray-100
-                 hover:shadow-md transition-all duration-200 text-left"
+      className="flex items-center gap-3 w-full rounded-lg bg-white p-3 border border-gray-100
+                 hover:bg-gray-50 transition-all duration-200 text-left"
     >
       <span className={`shrink-0 h-3 w-3 rounded-full ${color}`} />
       <div className="min-w-0 flex-1">
@@ -247,8 +247,8 @@ export default function Calendar() {
     <div className="space-y-6">
       {/* Page header */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-indigo-100">
-          <CalendarDays className="h-5 w-5 text-indigo-600" />
+        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100">
+          <CalendarDays className="h-5 w-5 text-gray-600" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
@@ -282,8 +282,8 @@ export default function Calendar() {
           </div>
           <button
             onClick={goToToday}
-            className="px-3 py-1.5 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg
-                       hover:bg-indigo-100 transition-colors duration-150"
+            className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg
+                       hover:bg-gray-200 transition-colors duration-150"
           >
             Today
           </button>
@@ -301,7 +301,7 @@ export default function Calendar() {
             <p className="text-sm text-red-500">Failed to load events.</p>
             <button
               onClick={refetch}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+              className="text-sm font-medium text-gray-600 hover:text-gray-800"
             >
               Retry
             </button>
@@ -342,7 +342,7 @@ export default function Calendar() {
                         transition-colors duration-150 cursor-pointer
                         hover:bg-gray-50/70
                         ${!d.isCurrentMonth ? 'bg-gray-50/40' : 'bg-white'}
-                        ${isSelected(d) ? 'bg-indigo-50/50' : ''}
+                        ${isSelected(d) ? 'bg-gray-100/50' : ''}
                       `}
                     >
                       {/* Day number */}
@@ -352,7 +352,7 @@ export default function Calendar() {
                             flex items-center justify-center h-7 w-7 text-sm font-medium rounded-full
                             transition-all duration-150
                             ${isTodayCell
-                              ? 'bg-indigo-600 text-white ring-2 ring-indigo-300 ring-offset-1'
+                              ? 'bg-gray-900 text-white'
                               : d.isCurrentMonth
                                 ? 'text-gray-900 hover:bg-gray-100'
                                 : 'text-gray-300'
@@ -373,7 +373,7 @@ export default function Calendar() {
                           />
                         ))}
                         {extraCount > 0 && (
-                          <p className="text-[10px] font-medium text-indigo-500 pl-1.5 mt-0.5">
+                          <p className="text-[10px] font-medium text-gray-500 pl-1.5 mt-0.5">
                             +{extraCount} more
                           </p>
                         )}
@@ -413,9 +413,9 @@ export default function Calendar() {
                           relative flex flex-col items-center justify-center py-2 rounded-lg
                           transition-all duration-150
                           ${isTodayCell
-                            ? 'bg-indigo-600 text-white ring-2 ring-indigo-300'
+                            ? 'bg-gray-900 text-white'
                             : isSelected(d)
-                              ? 'bg-indigo-100 text-indigo-700'
+                              ? 'bg-gray-200 text-gray-900'
                               : d.isCurrentMonth
                                 ? 'text-gray-900 hover:bg-gray-100'
                                 : 'text-gray-300'
@@ -427,7 +427,7 @@ export default function Calendar() {
                           <span
                             className={`
                               absolute bottom-1 h-1 w-1 rounded-full
-                              ${isTodayCell ? 'bg-white' : 'bg-indigo-500'}
+                              ${isTodayCell ? 'bg-white' : 'bg-gray-900'}
                             `}
                           />
                         )}
