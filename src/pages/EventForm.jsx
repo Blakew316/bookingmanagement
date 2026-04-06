@@ -28,18 +28,21 @@ const emptyForm = {
 export default function EventForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const toast = useToast();
+  const addToast = useToast();
   const isEdit = Boolean(id);
 
   const { data: contacts } = useApi('/contacts');
   const { data: spaces } = useApi('/spaces');
-  const { data: existingEvent, loading: eventLoading } = useApi(isEdit ? `/events/${id}` : null);
+  const { data: existingEvent, loading: eventLoading } = useApi(
+    isEdit ? `/events/${id}` : '/events?_noop=1'
+  );
 
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (isEdit && existingEvent) {
+    if (isEdit && existingEvent && !Array.isArray(existingEvent)) {
       setForm({
         title: existingEvent.title || '',
         description: existingEvent.description || '',
@@ -58,12 +61,23 @@ export default function EventForm() {
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: null }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.title.trim()) newErrors.title = 'Title is required';
+    if (!form.event_date) newErrors.event_date = 'Event date is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title || !form.event_date) {
-      toast('Title and date are required', 'error');
+    if (!validate()) {
+      addToast('Please fill in all required fields', 'error');
       return;
     }
 
@@ -79,21 +93,27 @@ export default function EventForm() {
 
       if (isEdit) {
         await api.put(`/events/${id}`, payload);
-        toast('Event updated successfully', 'success');
+        addToast('Event updated successfully', 'success');
         navigate(`/events/${id}`);
       } else {
         const result = await api.post('/events', payload);
-        toast('Event created successfully', 'success');
+        addToast('Event created successfully', 'success');
         navigate(`/events/${result.id}`);
       }
     } catch (err) {
-      toast(err.message, 'error');
+      addToast(err.message || 'Something went wrong', 'error');
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (isEdit && eventLoading) return <LoadingSpinner />;
+  if (isEdit && eventLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
@@ -116,7 +136,7 @@ export default function EventForm() {
           <div>
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Event Details</h3>
             <div className="space-y-4">
-              <Input label="Event Title *" placeholder="e.g. Johnson Wedding Reception" value={form.title} onChange={handleChange('title')} required />
+              <Input label="Event Title *" placeholder="e.g. Johnson Wedding Reception" value={form.title} onChange={handleChange('title')} error={errors.title} required />
               <Textarea label="Description" placeholder="Brief description of the event..." value={form.description} onChange={handleChange('description')} />
             </div>
           </div>
@@ -125,7 +145,7 @@ export default function EventForm() {
           <div>
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Date & Time</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Input label="Event Date *" type="date" value={form.event_date} onChange={handleChange('event_date')} required />
+              <Input label="Event Date *" type="date" value={form.event_date} onChange={handleChange('event_date')} error={errors.event_date} required />
               <Input label="Start Time" type="time" value={form.start_time} onChange={handleChange('start_time')} />
               <Input label="End Time" type="time" value={form.end_time} onChange={handleChange('end_time')} />
             </div>

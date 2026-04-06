@@ -35,8 +35,9 @@ const TRANSITIONS = {
 export default function EventDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const toast = useToast();
+  const addToast = useToast();
   const { data: event, loading, refetch } = useApi(`/events/${id}`);
+  const { data: payments, loading: paymentsLoading, refetch: refetchPayments } = useApi(`/events/${id}/payments`);
   const [paymentModal, setPaymentModal] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [paymentForm, setPaymentForm] = useState({
@@ -44,10 +45,27 @@ export default function EventDetail() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  if (loading) return <LoadingSpinner />;
-  if (!event) return <div className="text-center py-16 text-gray-500">Event not found</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
-  const paidAmount = event.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
+  if (!event) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-gray-500">Event not found</p>
+        <Button variant="outline" className="mt-4" onClick={() => navigate('/events')}>
+          Back to Events
+        </Button>
+      </div>
+    );
+  }
+
+  const paymentList = payments || event.payments || [];
+  const paidAmount = paymentList.reduce((sum, p) => sum + Number(p.amount), 0);
   const remaining = Math.max(0, event.total_amount - paidAmount);
   const paidPercent = event.total_amount > 0 ? Math.min(100, (paidAmount / event.total_amount) * 100) : 0;
   const currentStepIdx = STATUS_STEPS.indexOf(event.status);
@@ -56,28 +74,29 @@ export default function EventDetail() {
   const handleStatusChange = async (newStatus) => {
     try {
       await api.put(`/events/${id}/status`, { status: newStatus });
-      toast(`Status updated to ${capitalize(newStatus)}`, 'success');
+      addToast(`Status updated to ${capitalize(newStatus)}`, 'success');
       refetch();
     } catch (err) {
-      toast(err.message, 'error');
+      addToast(err.message, 'error');
     }
   };
 
   const handlePayment = async (e) => {
     e.preventDefault();
     if (!paymentForm.amount || parseFloat(paymentForm.amount) <= 0) {
-      toast('Please enter a valid amount', 'error');
+      addToast('Please enter a valid amount', 'error');
       return;
     }
     setSubmitting(true);
     try {
-      await api.post('/payments', { ...paymentForm, event_id: parseInt(id), amount: parseFloat(paymentForm.amount) });
-      toast('Payment recorded successfully', 'success');
+      await api.post(`/events/${id}/payments`, { ...paymentForm, event_id: parseInt(id), amount: parseFloat(paymentForm.amount) });
+      addToast('Payment recorded successfully', 'success');
       setPaymentModal(false);
       setPaymentForm({ amount: '', payment_type: 'deposit', payment_method: 'credit_card', payment_date: new Date().toISOString().split('T')[0], notes: '' });
+      refetchPayments();
       refetch();
     } catch (err) {
-      toast(err.message, 'error');
+      addToast(err.message, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -85,21 +104,22 @@ export default function EventDetail() {
 
   const handleDeletePayment = async (paymentId) => {
     try {
-      await api.del(`/payments/${paymentId}`);
-      toast('Payment removed', 'success');
+      await api.del(`/events/${id}/payments/${paymentId}`);
+      addToast('Payment removed', 'success');
+      refetchPayments();
       refetch();
     } catch (err) {
-      toast(err.message, 'error');
+      addToast(err.message, 'error');
     }
   };
 
   const handleDeleteEvent = async () => {
     try {
       await api.del(`/events/${id}`);
-      toast('Event deleted', 'success');
+      addToast('Event deleted', 'success');
       navigate('/events');
     } catch (err) {
-      toast(err.message, 'error');
+      addToast(err.message, 'error');
     }
   };
 
@@ -213,7 +233,18 @@ export default function EventDetail() {
             <Building2 className="w-5 h-5" />
             <span className="font-medium">Venue</span>
           </div>
-          <p className="text-lg font-semibold text-gray-900">{event.space_name || '—'}</p>
+          <p className="text-lg font-semibold text-gray-900">{event.space_name || 'Not assigned'}</p>
+        </Card>
+
+        <Card>
+          <div className="flex items-center gap-3 text-gray-500 mb-4">
+            <DollarSign className="w-5 h-5" />
+            <span className="font-medium">Total Amount</span>
+          </div>
+          <p className="text-lg font-semibold text-gray-900">{formatCurrency(event.total_amount)}</p>
+          <div className="mt-2">
+            <Badge status={event.payment_status} type="payment" />
+          </div>
         </Card>
       </div>
 
@@ -287,33 +318,52 @@ export default function EventDetail() {
           </div>
 
           {/* Payment History */}
-          {event.payments && event.payments.length > 0 ? (
-            <div className="space-y-3">
-              {event.payments.map((payment) => (
-                <div key={payment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                      <CreditCard className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">{formatCurrency(payment.amount)}</p>
-                      <p className="text-xs text-gray-500">
-                        {capitalize(payment.payment_type)} &middot; {capitalize(payment.payment_method?.replace('_', ' '))} &middot; {formatDate(payment.payment_date)}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleDeletePayment(payment.id)}
-                    className="opacity-0 group-hover:opacity-100 p-2 text-gray-400 hover:text-red-500 transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+          {paymentsLoading ? (
+            <div className="flex justify-center py-8">
+              <LoadingSpinner />
+            </div>
+          ) : paymentList.length > 0 ? (
+            <div className="overflow-x-auto -mx-6">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-y border-gray-100">
+                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Date</th>
+                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Type</th>
+                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Method</th>
+                    <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Amount</th>
+                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Notes</th>
+                    <th className="px-6 py-3" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {paymentList.map((payment) => (
+                    <tr key={payment.id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="px-6 py-3 text-sm text-gray-600">{formatDate(payment.payment_date)}</td>
+                      <td className="px-6 py-3">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-700">
+                          {capitalize(payment.payment_type)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-600">{capitalize(payment.payment_method?.replace('_', ' '))}</td>
+                      <td className="px-6 py-3 text-sm font-semibold text-gray-900 text-right">{formatCurrency(payment.amount)}</td>
+                      <td className="px-6 py-3 text-sm text-gray-500 max-w-[200px] truncate">{payment.notes || '-'}</td>
+                      <td className="px-6 py-3">
+                        <button
+                          onClick={() => handleDeletePayment(payment.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                          title="Delete payment"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
-            <div className="text-center py-6">
-              <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <div className="text-center py-8">
+              <CreditCard className="w-10 h-10 text-gray-300 mx-auto mb-3" />
               <p className="text-sm text-gray-400">No payments recorded yet</p>
             </div>
           )}
