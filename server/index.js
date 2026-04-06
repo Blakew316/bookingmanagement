@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import migrate from './migrate.js';
 import eventsRouter from './routes/events.js';
 import contactsRouter from './routes/contacts.js';
@@ -38,6 +40,15 @@ app.get('/api', (req, res) => {
       '/api/reports',
     ],
   });
+});
+
+// Serve built frontend in production
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const distPath = join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(join(distPath, 'index.html'));
 });
 
 // Error handler
