@@ -198,7 +198,7 @@ export default function Payments() {
                       {capitalize((payment.payment_method || '').replace(/_/g, ' '))}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {formatDate(payment.date)}
+                      {formatDate(payment.payment_date)}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-400 max-w-[200px] truncate">
                       {payment.notes || '\u2014'}
@@ -242,8 +242,8 @@ export default function Payments() {
           ) : (
             <div className="divide-y divide-gray-100">
               {outstandingEvents.map((event) => {
-                const total = event.totalAmount || event.total_amount || 0;
-                const paid = event.paidAmount || event.paid_amount || 0;
+                const total = event.total_amount || 0;
+                const paid = event.total_paid || 0;
                 const remaining = total - paid;
                 const percentage = total > 0 ? Math.round((paid / total) * 100) : 0;
 
@@ -264,12 +264,12 @@ export default function Payments() {
                         </Link>
                         <div className="flex items-center gap-3 mt-1">
                           <Badge
-                            status={event.payment_status || event.paymentStatus}
+                            status={event.payment_status}
                             type="payment"
                           />
-                          {event.date && (
+                          {event.event_date && (
                             <span className="text-xs text-gray-400">
-                              {formatDate(event.date)}
+                              {formatDate(event.event_date)}
                             </span>
                           )}
                         </div>

@@ -183,14 +183,14 @@ export default function ContactDetail() {
 
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <CalendarDays className="w-4 h-4 text-gray-400" />
-                    <span>{formatDate(event.date || event.start_date)}</span>
+                    <span>{formatDate(event.event_date)}</span>
                   </div>
 
-                  {event.amount != null && (
+                  {event.total_amount != null && (
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <DollarSign className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-900">
-                        {formatCurrency(event.amount)}
+                        {formatCurrency(event.total_amount)}
                       </span>
                     </div>
                   )}

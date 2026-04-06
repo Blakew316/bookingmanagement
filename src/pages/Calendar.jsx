@@ -106,9 +106,9 @@ function EventChip({ event, onClick }) {
       <span className="truncate text-[11px] font-medium text-gray-700 group-hover:text-gray-900">
         {event.title}
       </span>
-      {event.time && (
+      {event.start_time && (
         <span className="ml-auto shrink-0 text-[10px] text-gray-400">
-          {formatTime(event.time)}
+          {formatTime(event.start_time)}
         </span>
       )}
     </button>
@@ -128,8 +128,8 @@ function MobileEventCard({ event, onClick }) {
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-gray-900 truncate">{event.title}</p>
         <div className="flex items-center gap-2 mt-0.5">
-          {event.time && (
-            <span className="text-xs text-gray-500">{formatTime(event.time)}</span>
+          {event.start_time && (
+            <span className="text-xs text-gray-500">{formatTime(event.start_time)}</span>
           )}
           <Badge status={event.status} type="event" />
         </div>
@@ -168,8 +168,7 @@ export default function Calendar() {
     const map = {};
     if (!events || !Array.isArray(events)) return map;
     events.forEach((evt) => {
-      // Expect event.date to be "YYYY-MM-DD"
-      const key = evt.date;
+      const key = evt.event_date;
       if (!key) return;
       if (!map[key]) map[key] = [];
       map[key].push(evt);

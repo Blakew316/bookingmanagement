@@ -65,28 +65,28 @@ export default function Dashboard() {
         <StatCard
           icon={DollarSign}
           label="Total Revenue"
-          value={formatCurrency(overview?.totalRevenue || 0)}
+          value={formatCurrency(overview?.total_revenue || 0)}
           sub="All time earnings"
           gradient="from-emerald-500 to-teal-500"
         />
         <StatCard
           icon={Clock}
           label="Outstanding Balance"
-          value={formatCurrency(overview?.outstandingBalance || 0)}
+          value={formatCurrency(overview?.outstanding_balance || 0)}
           sub="Pending payments"
           gradient="from-amber-500 to-orange-500"
         />
         <StatCard
           icon={CalendarDays}
           label="Upcoming Events"
-          value={overview?.upcomingEvents || 0}
+          value={overview?.upcoming_count || 0}
           sub="Next 30 days"
           gradient="from-indigo-600 to-purple-600"
         />
         <StatCard
           icon={Users}
-          label="Total Contacts"
-          value={overview?.totalContacts || 0}
+          label="Total Events"
+          value={overview?.total_events || 0}
           sub="Active contacts"
           gradient="from-rose-500 to-pink-500"
         />
@@ -264,16 +264,16 @@ export default function Dashboard() {
                         </Link>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {event.contact?.firstName} {event.contact?.lastName}
+                        {event.contact_first_name} {event.contact_last_name}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {formatDate(event.date)}
+                        {formatDate(event.event_date)}
                       </td>
                       <td className="px-6 py-4">
                         <Badge status={event.status} type="event" />
                       </td>
                       <td className="px-6 py-4 text-sm font-semibold text-gray-900 text-right">
-                        {formatCurrency(event.totalAmount || 0)}
+                        {formatCurrency(event.total_amount || 0)}
                       </td>
                     </tr>
                   ))}
@@ -311,10 +311,10 @@ export default function Dashboard() {
                   <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
                     <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex flex-col items-center justify-center">
                       <span className="text-xs font-bold text-indigo-600 leading-none">
-                        {event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'short' }) : ''}
+                        {event.event_date ? new Date(event.event_date + 'T00:00').toLocaleDateString('en-US', { month: 'short' }) : ''}
                       </span>
                       <span className="text-sm font-bold text-indigo-900 leading-none mt-0.5">
-                        {event.date ? new Date(event.date).getDate() : ''}
+                        {event.event_date ? new Date(event.event_date + 'T00:00').getDate() : ''}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -322,7 +322,7 @@ export default function Dashboard() {
                         {event.title}
                       </p>
                       <p className="text-xs text-gray-500 mt-0.5">
-                        {formatTime(event.startTime)}
+                        {formatTime(event.start_time)}
                       </p>
                     </div>
                   </div>

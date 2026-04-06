@@ -68,29 +68,29 @@ export default function Reports() {
         <StatCard
           icon={DollarSign}
           label="Total Revenue"
-          value={formatCurrency(overview?.totalRevenue || 0)}
+          value={formatCurrency(overview?.total_revenue || 0)}
           sub="All time earnings"
           gradient="from-emerald-500 to-teal-500"
         />
         <StatCard
           icon={TrendingUp}
           label="Avg. Event Value"
-          value={formatCurrency(overview?.avgEventValue || 0)}
+          value={formatCurrency(overview?.total_events ? (overview.total_revenue / overview.total_events) : 0)}
           sub="Per event average"
           gradient="from-indigo-600 to-purple-600"
         />
         <StatCard
           icon={CalendarDays}
           label="Total Events"
-          value={overview?.totalEvents || 0}
+          value={overview?.total_events || 0}
           sub="All time events"
           gradient="from-amber-500 to-orange-500"
         />
         <StatCard
           icon={PartyPopper}
-          label="Completed Events"
-          value={overview?.completedEvents || 0}
-          sub="Successfully delivered"
+          label="Confirmed Events"
+          value={overview?.confirmed_count || 0}
+          sub="Ready to go"
           gradient="from-rose-500 to-pink-500"
         />
       </div>
@@ -180,7 +180,7 @@ export default function Reports() {
                 />
                 <YAxis
                   type="category"
-                  dataKey="type"
+                  dataKey="event_type"
                   tick={{ fontSize: 12, fill: '#6b7280' }}
                   axisLine={false}
                   tickLine={false}
@@ -198,7 +198,7 @@ export default function Reports() {
                 <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={28}>
                   {(typeData || []).map((entry, index) => (
                     <Cell
-                      key={entry.type}
+                      key={entry.event_type}
                       fill={TYPE_COLORS[index % TYPE_COLORS.length]}
                     />
                   ))}
@@ -275,22 +275,22 @@ export default function Reports() {
           <div className="text-center p-6 bg-emerald-50 rounded-xl">
             <p className="text-sm font-medium text-emerald-700">Collected</p>
             <p className="text-2xl font-bold text-emerald-900 mt-1">
-              {formatCurrency(overview?.totalRevenue || 0)}
+              {formatCurrency(overview?.total_revenue || 0)}
             </p>
           </div>
           <div className="text-center p-6 bg-amber-50 rounded-xl">
             <p className="text-sm font-medium text-amber-700">Outstanding</p>
             <p className="text-2xl font-bold text-amber-900 mt-1">
-              {formatCurrency(overview?.outstandingBalance || 0)}
+              {formatCurrency(overview?.outstanding_balance || 0)}
             </p>
           </div>
           <div className="text-center p-6 bg-indigo-50 rounded-xl">
             <p className="text-sm font-medium text-indigo-700">Collection Rate</p>
             <p className="text-2xl font-bold text-indigo-900 mt-1">
-              {overview?.totalRevenue && overview?.outstandingBalance != null
+              {overview?.total_revenue && overview?.outstanding_balance != null
                 ? `${Math.round(
-                    (overview.totalRevenue /
-                      (overview.totalRevenue + overview.outstandingBalance)) *
+                    (overview.total_revenue /
+                      (overview.total_revenue + overview.outstanding_balance)) *
                       100
                   )}%`
                 : '—'}

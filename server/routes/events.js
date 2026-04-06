@@ -5,7 +5,7 @@ const router = Router();
 
 // GET / - List events with filters
 router.get('/', (req, res) => {
-  const { status, search, from, to, space_id, limit } = req.query;
+  const { status, search, from, to, space_id, limit, payment_status } = req.query;
 
   let where = ['1=1'];
   const params = [];
@@ -34,6 +34,8 @@ router.get('/', (req, res) => {
 
   let sql = `
     SELECT e.*,
+      c.first_name AS contact_first_name,
+      c.last_name AS contact_last_name,
       c.first_name || ' ' || c.last_name AS contact_name,
       c.email AS contact_email,
       s.name AS space_name,
@@ -50,6 +52,7 @@ router.get('/', (req, res) => {
     LEFT JOIN payments p ON p.event_id = e.id
     WHERE ${where.join(' AND ')}
     GROUP BY e.id
+    ${payment_status === 'outstanding' ? 'HAVING payment_status IN (\'unpaid\', \'partial\')' : ''}
     ORDER BY e.event_date DESC
   `;
 
@@ -66,6 +69,8 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const event = db.prepare(`
     SELECT e.*,
+      c.first_name AS contact_first_name,
+      c.last_name AS contact_last_name,
       c.first_name || ' ' || c.last_name AS contact_name,
       c.email AS contact_email,
       c.phone AS contact_phone,
@@ -84,8 +89,43 @@ router.get('/:id', (req, res) => {
   }
 
   const payments = db.prepare('SELECT * FROM payments WHERE event_id = ? ORDER BY payment_date').all(req.params.id);
+  const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+  let payment_status = 'unpaid';
+  if (event.total_amount === 0) payment_status = 'none';
+  else if (totalPaid >= event.total_amount) payment_status = 'paid';
+  else if (totalPaid > 0) payment_status = 'partial';
 
-  res.json({ ...event, payments });
+  res.json({ ...event, payments, total_paid: totalPaid, payment_status });
+});
+
+// GET /:id/payments - List payments for an event
+router.get('/:id/payments', (req, res) => {
+  const payments = db.prepare('SELECT * FROM payments WHERE event_id = ? ORDER BY payment_date DESC').all(req.params.id);
+  res.json(payments);
+});
+
+// POST /:id/payments - Create payment for an event
+router.post('/:id/payments', (req, res) => {
+  const { amount, payment_type, payment_method, payment_date, notes } = req.body;
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ message: 'Valid amount is required' });
+  }
+  const result = db.prepare(`
+    INSERT INTO payments (event_id, amount, payment_type, payment_method, payment_date, notes)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(req.params.id, amount, payment_type || 'deposit', payment_method || 'credit_card', payment_date || new Date().toISOString().split('T')[0], notes || null);
+  const payment = db.prepare('SELECT * FROM payments WHERE id = ?').get(result.lastInsertRowid);
+  res.status(201).json(payment);
+});
+
+// DELETE /:id/payments/:paymentId - Delete a payment
+router.delete('/:id/payments/:paymentId', (req, res) => {
+  const payment = db.prepare('SELECT * FROM payments WHERE id = ? AND event_id = ?').get(req.params.paymentId, req.params.id);
+  if (!payment) {
+    return res.status(404).json({ message: 'Payment not found' });
+  }
+  db.prepare('DELETE FROM payments WHERE id = ?').run(req.params.paymentId);
+  res.json({ message: 'Payment deleted' });
 });
 
 // POST / - Create event
